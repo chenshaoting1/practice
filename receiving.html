@@ -1,0 +1,167 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>收信人</title>
+
+<link rel="stylesheet" type="text/css" href="css/reset.css"/>
+<link rel="stylesheet" type="text/css" href="css/font/iconfont.css"/>
+<link rel="stylesheet" type="text/css" href="css/mycss.css"/>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+
+</head>
+
+<body>
+
+<div class="my_all">
+
+    <!--左侧全部人员-->
+    <div class="staff_all">
+        <div class="jiantou"></div>
+        <div class="dingwei">
+            <!--搜索-->
+            <div class="search"><i class="iconfont icon-sousuo"></i><input type="text" value="" placeholder="搜索姓名" /></div>
+            <!--全部人员-->
+            <ul class="staff_ul">
+                <li pid="1" college="教育学院"><label><input class="inp mychkboxe" name="" type="checkbox" value="" />张三（14602368）</label></li>
+                <li pid="2" college="教育学院"><label><input class="inp mychkboxe" name="" type="checkbox" value="" />李四张三张三张三张三张三张三张三张三张三张三张三张三张三（14602368）</label></li>
+                <li pid="3" college="教育学院"><label><input class="inp mychkboxe" name="" type="checkbox" value="" />王五（14602368）</label></li>
+                <li pid="4" college="教育学院"><label><input class="inp mychkboxe" name="" type="checkbox" value="" />马六（14602368）</label></li>
+            </ul>
+            <!--分页和全选-->
+            <div class="footer">
+                <div class="quanxuan"><label><input class="inp mychkboxAlle" name="" type="checkbox" value="" />全选</label></div>
+                <div class="fenye">
+                    <div>
+                        <a href="#" class="previous pag_li disabled" data-action="previous"><i class="iconfont icon-navigatebefore icon_zt"></i></a>
+                        <div class="pag_con">
+                            <input class="pag_con_input" type="text" value="1">
+                            <span class="pag_xue">／</span>
+                            <span class="pag_zong">5</span>
+                        </div>
+                        <a href="#" class="next pag_li" data-action="next"><i class="iconfont icon-navigatenext icon_zt"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--右侧已选定人员-->
+    <div class="staff_selected">
+        <div class="tit">已选收信人</div>
+        <ul class="staff_sel">
+            <li class="cs-selected__item" pid="90"><div class="names">张三（14602368）</div><div class="education">教育学院</div><div class="delete">删除</div></li>
+            
+        </ul>
+    </div>
+
+</div>
+
+<script>
+
+    /*全选*/
+/*$(".quanxuan").click(function(){
+        if($(".mychkboxAlle",this).is(':checked')){
+             $(".staff_ul li").each(function(){
+                 $(".mychkboxe",this).prop("checked", true);*//*如果不能全选就是.prop不兼容这个js包,换下就可以了*//*
+            });
+        }else{
+            $(".staff_ul li").each(function(){
+                $(".mychkboxe",this).prop("checked", false);
+            });
+        }
+    });
+    var total = $(".mychkboxe").length;
+    $(".mychkboxe").click(function(){
+        if($(this).is(':checked')){
+            var checktotal=0;
+            $(".mychkboxe").each(function(){
+                if($(this).is(':checked')) checktotal+=1;
+            });
+            if (total == checktotal) $(".mychkboxAlle").prop("checked", true);
+        }else{
+            $(".mychkboxAlle").each(function(){
+                $(this).prop("checked", false);
+            });
+        }
+    });*/
+
+
+
+
+        $(".mychkboxAlle").on('click', function(){
+            if($(this).is(":checked")){
+                $("ul.staff_ul li input[type='checkbox']").each(function(){
+                    var $pid = $(this).parents("li").attr("pid"); //当前pid
+                    $("ul.staff_sel li[pid="+$pid+"]").length === 0 && appendhtml($(this)); //不存在则添加
+                });
+                //checkbox全部选中
+                $("ul.staff_ul li").find("input[type='checkbox']").prop("checked", true);
+            }else{
+                $("ul.staff_ul li input[type='checkbox']").each(function(){
+                    var $pid = $(this).parents("li").attr("pid"); //当前pid
+                    $("ul.staff_sel li[pid="+$pid+"]").length === 1 && removehtml($(this)); //存在则移除
+                });
+                //checkbox全部取消选中
+                $("ul.staff_ul li").find("input[type='checkbox']").prop("checked", false);
+            }
+
+        });
+        /*单选*/
+        $("ul.staff_ul li input[type='checkbox']").on('click', function(){
+            //alert(123);
+            $(this).is(":checked") ? appendhtml($(this)) : removehtml($(this)) ;
+            console.log($(this).is(":checked"));
+            chkAll();
+        });
+
+
+
+    /* 鼠标移到li,删除就出现 */
+    $("ul.staff_sel").on('mouseover', 'li', function(){
+        $(".delete",this).show();
+    });
+    $("ul.staff_sel").on('mouseout', 'li', function(){
+        $(".delete",this).hide();
+    });
+
+    /*删除当前一行数据*/
+    $("ul.staff_sel ").on('click', '.delete', function(){
+        removehtml($(this));
+        chkAll();
+    });
+
+
+
+
+    //添加信息
+    function appendhtml(elm){
+        var $this = elm.parent(),
+                html = '<li class="cs-selected__item" pid="'+$this.parent().attr("pid")+'"><div class="names">'+$("label",$this.parent()).eq(0).text()+'</div><div class="education">'+$this.parent().attr("college")+'</div><div class="delete">删除</div></li>';
+        //alert($this.parent().attr("pid")+"--"+$("label",$this.parent()).eq(0).text());
+        $("ul.staff_sel").append(html); //将条目自动添加到右侧(已选收信人)中
+    }
+    //删除条目
+    function removehtml(elm){
+        var $pid = elm.parents("li").attr("pid");
+        $("ul.staff_sel li[pid="+$pid+"]").remove(); //移除删除的条目
+        $("ul.staff_ul li[pid="+$pid+"]").find("input").prop("checked", false); //取消checkbox选中
+        //alert($pid);
+
+    }
+
+
+    //是否全选
+    function chkAll(){
+        var $chklen = $("ul.staff_ul li input[type='checkbox']:checked");  //选中个数
+        var $len = $("ul.staff_ul li input[type='checkbox']");  //总个数
+        if($chklen.length === $len.length){
+            $(".mychkboxAlle").prop("checked", true);
+        }else{
+            $(".mychkboxAlle").prop("checked", false);
+        }
+    }
+
+</script>
+
+</body>
+</html>
